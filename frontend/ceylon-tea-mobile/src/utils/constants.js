@@ -1,5 +1,5 @@
 // API Configuration
-export const API_BASE_URL = 'http://10.0.2.2:8000/api'; // Change this to your Django backend URL
+export const API_BASE_URL = 'http://100.113.8.103:8000/api'; // Change this to your Django backend URL
 
 // API Endpoints
 export const ENDPOINTS = {

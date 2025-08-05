@@ -18,12 +18,15 @@ import { useCart } from '../context/CartContext';
 import TeaService from '../services/teaService';
 import { TEA_CATEGORIES, TEA_IMAGE_URL } from '../utils/constants';
 import { formatCurrency } from '../utils/helpers';
+import AnimatedSuccess from '../components/AnimatedSuccess';
 
-const TeaListScreen = ({ navigation }) => {
+const TeaListScreen = ({ navigation, route }) => {
   const [teas, setTeas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
   const { user, logout } = useAuth();
   const { addToCart, getCartItemsCount } = useCart();
   const insets = useSafeAreaInsets();
@@ -31,6 +34,16 @@ const TeaListScreen = ({ navigation }) => {
   useEffect(() => {
     loadTeas();
   }, [selectedCategory]);
+
+  // Handle navigation params for success message
+  useEffect(() => {
+    if (route.params?.showSuccess && route.params?.successMessage) {
+      setSuccessMessage(route.params.successMessage);
+      setShowSuccess(true);
+      // Clear the params so it doesn't show again on re-render
+      navigation.setParams({ showSuccess: false, successMessage: null });
+    }
+  }, [route.params, navigation]);
 
   const loadTeas = async () => {
     try {
@@ -55,11 +68,13 @@ const TeaListScreen = ({ navigation }) => {
 
   const handleAddToCart = (tea) => {
     addToCart(tea, 1);
-    Alert.alert(
-      'Added to Cart',
-      `${tea.name} has been added to your cart`,
-      [{ text: 'OK' }]
-    );
+    setSuccessMessage(`${tea.name} added to cart!`);
+    setShowSuccess(true);
+  };
+
+  const handleSuccessDismiss = () => {
+    setShowSuccess(false);
+    setSuccessMessage('');
   };
 
   const handleGoToCart = () => {
@@ -190,6 +205,13 @@ const TeaListScreen = ({ navigation }) => {
           columnWrapperStyle={styles.row}
         />
       </View>
+
+      {/* Animated Success */}
+      <AnimatedSuccess
+        visible={showSuccess}
+        message={successMessage}
+        onDismiss={handleSuccessDismiss}
+      />
     </View>
   );
 };

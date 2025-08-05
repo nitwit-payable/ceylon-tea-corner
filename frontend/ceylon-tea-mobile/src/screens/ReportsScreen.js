@@ -87,21 +87,28 @@ const ReportsScreen = ({ navigation }) => {
   };
 
   const getTotalRevenue = () => {
-    return sales.reduce((total, sale) => total + (sale.total_amount || 0), 0);
+    return sales.reduce((total, sale) => {
+      const teaPrice = sale.tea_info?.price || 0;
+      const saleRevenue = teaPrice * sale.quantity;
+      return total + saleRevenue;
+    }, 0);
   };
 
   const getTopSellingTeas = () => {
     const teaSales = {};
     sales.forEach(sale => {
       const teaName = sale.tea_info?.name || sale.tea?.name || 'Unknown Tea';
+      const teaPrice = sale.tea_info?.price || 0;
+      const saleRevenue = teaPrice * sale.quantity;
+      
       if (teaSales[teaName]) {
         teaSales[teaName].quantity += sale.quantity;
-        teaSales[teaName].revenue += sale.total_amount || 0;
+        teaSales[teaName].revenue += saleRevenue;
       } else {
         teaSales[teaName] = {
           name: teaName,
           quantity: sale.quantity,
-          revenue: sale.total_amount || 0,
+          revenue: saleRevenue,
         };
       }
     });
@@ -115,14 +122,17 @@ const ReportsScreen = ({ navigation }) => {
     const categorySales = {};
     sales.forEach(sale => {
       const category = sale.tea_info?.category || sale.tea?.category || 'Unknown';
+      const teaPrice = sale.tea_info?.price || 0;
+      const saleRevenue = teaPrice * sale.quantity;
+      
       if (categorySales[category]) {
         categorySales[category].quantity += sale.quantity;
-        categorySales[category].revenue += sale.total_amount || 0;
+        categorySales[category].revenue += saleRevenue;
       } else {
         categorySales[category] = {
           name: category,
           quantity: sale.quantity,
-          revenue: sale.total_amount || 0,
+          revenue: saleRevenue,
         };
       }
     });
@@ -201,7 +211,9 @@ const ReportsScreen = ({ navigation }) => {
                   Qty: {sale.quantity} • {formatDate(sale.sold_at)}
                 </Text>
               </View>
-              <Text style={styles.saleAmount}>{formatCurrency(sale.total_amount || 0)}</Text>
+              <Text style={styles.saleAmount}>
+                {formatCurrency((sale.tea_info?.price || 0) * sale.quantity)}
+              </Text>
             </View>
           )) : (
             <Text style={styles.noDataText}>No sales data available</Text>

@@ -68,19 +68,12 @@ const RecordSaleScreen = ({ navigation }) => {
         const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
         const totalAmount = getCartTotal();
         
-        Alert.alert(
-          'Sales Recorded Successfully!',
-          `${totalItems} items sold for ${formatCurrency(totalAmount)}`,
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                clearCart();
-                navigation.goBack();
-              }
-            }
-          ]
-        );
+        // Clear cart and navigate back immediately with success message
+        clearCart();
+        navigation.navigate('TeaList', {
+          showSuccess: true,
+          successMessage: `${totalItems} items sold for ${formatCurrency(totalAmount)}`
+        });
       } else {
         Alert.alert(
           'Some Sales Failed',
