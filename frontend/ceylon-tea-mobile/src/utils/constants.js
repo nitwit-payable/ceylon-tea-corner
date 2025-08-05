@@ -1,5 +1,5 @@
 // API Configuration
-export const API_BASE_URL = 'http://100.113.8.103:8000/api'; // Change this to your Django backend URL
+export const API_BASE_URL = 'https://eeedf922968b.ngrok-free.app/api'; // Change this to your Django backend URL
 
 // API Endpoints
 export const ENDPOINTS = {
